@@ -144,7 +144,8 @@ module DeviseTokenAuth::Concerns::SetUserByToken
   def refresh_headers
     # Lock the user record during any auth_header updates to ensure
     # we don't have write contention from multiple threads
-    @resource.with_lock do
+    # disable lock (rails with multi database)
+    # @resource.with_lock do
       # should not append auth header if @resource related token was
       # cleared by sign out in the meantime
       return if @used_auth_by_token && @resource.tokens[@token.client].nil?
@@ -158,7 +159,7 @@ module DeviseTokenAuth::Concerns::SetUserByToken
       if DeviseTokenAuth.cookie_enabled && !@is_batch_request
         set_cookie(_auth_header_from_batch_request)
       end
-    end # end lock
+    # end # end lock
   end
 
   def set_cookie(auth_header)
